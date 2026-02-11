@@ -34,10 +34,10 @@ cargo install --git https://github.com/filiphric/portmap
 
 ## Usage
 
-Requires `sudo` (port 80 + `/etc/hosts` writes). Mappings are session-only — they're cleaned up when the tool stops.
+Mappings are session-only — they're cleaned up when the tool stops. If not already root, `portmap` automatically re-runs itself under `sudo` and prompts for your password.
 
 ```
-sudo portmap
+portmap
 ```
 
 This launches a TUI where you manage your mappings:
@@ -79,7 +79,7 @@ Typing `my-project` in the domain field automatically maps to `my-project.localh
 If `portmap` is killed with `SIGKILL` or during a power loss, leftover `/etc/hosts` entries can be removed with:
 
 ```
-sudo portmap --cleanup
+portmap --cleanup
 ```
 
 Under normal circumstances (quitting with `q`, Ctrl+C, SIGTERM, or even a panic), cleanup happens automatically.

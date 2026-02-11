@@ -14,15 +14,17 @@ use anyhow::Result;
 use std::path::PathBuf;
 use tokio::sync::watch;
 
-fn check_root() -> Result<()> {
-    if !nix_is_root() {
-        anyhow::bail!("portmap must be run as root. Try: sudo portmap");
+fn escalate_if_needed() -> Result<()> {
+    if unsafe { libc::geteuid() == 0 } {
+        return Ok(());
     }
-    Ok(())
-}
-
-fn nix_is_root() -> bool {
-    unsafe { libc::geteuid() == 0 }
+    let exe = std::env::current_exe()?;
+    let args: Vec<String> = std::env::args().skip(1).collect();
+    let status = std::process::Command::new("sudo")
+        .arg(exe)
+        .args(args)
+        .status()?;
+    std::process::exit(status.code().unwrap_or(1));
 }
 
 #[tokio::main]
@@ -31,11 +33,11 @@ async fn main() -> Result<()> {
 
     // Handle --cleanup flag
     if args.iter().any(|a| a == "--cleanup") {
-        check_root()?;
+        escalate_if_needed()?;
         return run_cleanup();
     }
 
-    check_root()?;
+    escalate_if_needed()?;
 
     let hosts_path = PathBuf::from("/etc/hosts");
 
