@@ -3,6 +3,11 @@ use std::os::unix::process::CommandExt;
 use std::process::Command;
 
 pub fn check_for_update() -> Result<()> {
+    // Guard: skip if we just updated (prevents infinite restart loops)
+    if std::env::args().any(|a| a == "--skip-update") {
+        return Ok(());
+    }
+
     let current = env!("CARGO_PKG_VERSION");
 
     // Fetch latest release info from GitHub
@@ -99,9 +104,10 @@ pub fn check_for_update() -> Result<()> {
 
     println!("Updated to {latest}. Restarting...");
 
-    // Re-exec with same args
+    // Re-exec with same args + --skip-update to prevent re-checking
     let err = Command::new(&exe_path)
         .args(std::env::args().skip(1))
+        .arg("--skip-update")
         .exec();
 
     // exec() only returns on error
