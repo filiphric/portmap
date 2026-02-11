@@ -19,13 +19,17 @@ Uses `.localhost` (RFC 6761) instead of `.local` to avoid macOS mDNS/Bonjour 5-s
 ## Install
 
 ```
-cargo install --path .
+curl -fsSL https://raw.githubusercontent.com/filiphric/portmap/main/install.sh | sh
 ```
 
-Or build manually:
+This downloads the latest release binary for your Mac (Apple Silicon or Intel) and places it in `/usr/local/bin`.
+
+### Build from source
+
+If you prefer to build from source (requires [Rust](https://rustup.rs)):
 
 ```
-cargo build --release
+cargo install --git https://github.com/filiphric/portmap
 ```
 
 ## Usage
