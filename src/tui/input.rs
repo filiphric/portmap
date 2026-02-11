@@ -131,8 +131,11 @@ pub fn validate_input(state: &TuiState) -> Result<Mapping, String> {
 
 /// Check if a port is reachable by attempting a TCP connection.
 pub async fn check_port(port: u16) -> MappingStatus {
-    match tokio::net::TcpStream::connect(format!("127.0.0.1:{}", port)).await {
-        Ok(_) => MappingStatus::Active,
-        Err(_) => MappingStatus::PortUnreachable,
+    if tokio::net::TcpStream::connect(format!("127.0.0.1:{}", port)).await.is_ok() {
+        return MappingStatus::Active;
     }
+    if tokio::net::TcpStream::connect(format!("[::1]:{}", port)).await.is_ok() {
+        return MappingStatus::Active;
+    }
+    MappingStatus::PortUnreachable
 }

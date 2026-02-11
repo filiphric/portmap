@@ -67,7 +67,7 @@ pub async fn handle_request(
 
     // Build the forwarding URI
     let uri_str = format!(
-        "http://127.0.0.1:{}{}",
+        "http://localhost:{}{}",
         port,
         req.uri()
             .path_and_query()
@@ -122,7 +122,7 @@ pub async fn handle_request(
         Err(e) => Ok(Response::builder()
             .status(StatusCode::BAD_GATEWAY)
             .body(full_body(&format!(
-                "Failed to connect to 127.0.0.1:{} — {}",
+                "Failed to connect to localhost:{} — {}",
                 port, e
             )))
             .unwrap()),
