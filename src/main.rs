@@ -4,6 +4,7 @@ mod error;
 mod hosts;
 mod proxy;
 mod tui;
+mod update;
 
 use crate::app::Mapping;
 use crate::cleanup::{install_panic_hook, run_cleanup, spawn_signal_handler};
@@ -38,6 +39,10 @@ async fn main() -> Result<()> {
     }
 
     escalate_if_needed()?;
+
+    if let Err(e) = update::check_for_update() {
+        let _ = e;
+    }
 
     let hosts_path = PathBuf::from("/etc/hosts");
 
